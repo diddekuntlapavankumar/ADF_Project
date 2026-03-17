@@ -1,0 +1,48 @@
+{
+	"name": "DS_Customer_Sink",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQL_Database",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Surrogate_Key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Customer_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Name",
+				"type": "varchar"
+			},
+			{
+				"name": "City",
+				"type": "varchar"
+			},
+			{
+				"name": "Start_Date",
+				"type": "date"
+			},
+			{
+				"name": "End_Date",
+				"type": "date"
+			},
+			{
+				"name": "Current_Flag",
+				"type": "char"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Customer_Sink"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
