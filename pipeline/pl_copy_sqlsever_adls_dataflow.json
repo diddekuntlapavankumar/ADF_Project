@@ -1,9 +1,9 @@
 {
-	"name": "pl_customer_scd2",
+	"name": "pl_copy_sqlsever_adls_dataflow",
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy_SQL_To_ADLS",
+				"name": "Copy data1",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -43,20 +43,49 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "ds_emp_source",
+						"referenceName": "source_customer",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "dim_customer_csv",
+						"referenceName": "dim_customer",
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "df_scd_type2",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "Copy data1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "dataflow1",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
 			}
 		],
-		"annotations": [],
-		"lastPublishTime": "2026-03-17T06:20:28Z"
-	},
-	"type": "Microsoft.DataFactory/factories/pipelines"
+		"annotations": []
+	}
 }

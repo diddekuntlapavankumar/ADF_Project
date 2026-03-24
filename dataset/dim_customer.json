@@ -1,8 +1,8 @@
 {
-	"name": "dim_customer_csv",
+	"name": "dim_customer",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "ls_adls_1",
+			"referenceName": "ls_adls_2",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
@@ -10,15 +10,14 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"folderPath": "dim",
-				"fileSystem": "processed1"
+				"folderPath": "customer",
+				"fileSystem": "dim"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
-			"firstRowAsHeader": false,
-			"quoteChar": null
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
 		},
 		"schema": []
-	},
-	"type": "Microsoft.DataFactory/factories/datasets"
+	}
 }
