@@ -55,7 +55,7 @@
 				]
 			},
 			{
-				"name": "Data flow1",
+				"name": "df_scd_type2",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [
 					{
