@@ -51,8 +51,10 @@
 				"     multiple: false,",
 				"     pickup: 'any',",
 				"     broadcast: 'auto')~> lookup1",
-				"lookup1 split(isNull(sourcenew@CustomerID),",
-				"     disjoint: false) ~> split1@(NewRecords, OtherRecords)"
+				"lookup1 split(isNull(sourceDim@CustomerID),",
+				"      !isNull(sourceDim@CustomerID) && (sourceNew@Name != sourceDim@Name || sourceNew@City != sourceDim@City ),",
+				"     !isNull(sourceDim@CustomerID) && sourceNew@Name == sourceDim@Name && sourceNew@City == sourceDim@City,",
+				"     disjoint: false) ~> split1@(NewRecords, UpdatedRecords, UnchangedRecords, OtherRecords)"
 			]
 		}
 	}
