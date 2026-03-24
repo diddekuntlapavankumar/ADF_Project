@@ -1,5 +1,5 @@
 {
-	"name": "dim_customer",
+	"name": "dim_customer_file",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ls_adls_2",
@@ -10,7 +10,6 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "dbo.source_customer.txt",
 				"folderPath": "customer",
 				"fileSystem": "dim"
 			},

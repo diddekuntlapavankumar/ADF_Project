@@ -1,0 +1,59 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "adls_output",
+						"type": "DatasetReference"
+					},
+					"name": "sourcenew"
+				},
+				{
+					"dataset": {
+						"referenceName": "dim_customer_file",
+						"type": "DatasetReference"
+					},
+					"name": "sourceDim"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "lookup1"
+				},
+				{
+					"name": "split1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CustomerID as integer,",
+				"          Name as string,",
+				"          City as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourcenew",
+				"source(output(",
+				"          CustomerID as short,",
+				"          Name as string,",
+				"          City as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceDim",
+				"sourcenew, sourceDim lookup(sourcenew@CustomerID == sourceDim@CustomerID",
+				"     && sourcenew@Name == sourceDim@Name",
+				"     && sourcenew@City == sourceDim@City,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup1",
+				"lookup1 split(isNull(sourcenew@CustomerID),",
+				"     disjoint: false) ~> split1@(NewRecords, OtherRecords)"
+			]
+		}
+	}
+}
