@@ -1,0 +1,126 @@
+{
+	"name": "dfl_typ2",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Src_customer",
+						"type": "DatasetReference"
+					},
+					"name": "sourceCust"
+				}
+			],
+			"sinks": [
+				{
+					"name": "sink1"
+				},
+				{
+					"name": "sink2"
+				},
+				{
+					"name": "sink3"
+				}
+			],
+			"transformations": [
+				{
+					"name": "LkpOnTgt"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "Split",
+					"description": "Update as Update"
+				},
+				{
+					"name": "alterRow1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "alterRow2"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "alterRow3"
+				},
+				{
+					"name": "derivedColumn3"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CustomerID as integer,",
+				"          Name as string,",
+				"          City as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> sourceCust",
+				"sourceCust lookup(sourceCust@CustomerID == TgtCust@CustomerID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> LkpOnTgt",
+				"LkpOnTgt select(mapColumn(",
+				"          CustomerID_New = sourceCust@CustomerID,",
+				"          Name_new = sourceCust@Name,",
+				"          City_new = sourceCust@City,",
+				"          SurrogateKey,",
+				"          CustomerID_dim = TgtCust@CustomerID,",
+				"          Name_dim = TgtCust@Name,",
+				"          City_dim = TgtCust@City,",
+				"          Start_Date,",
+				"          End_Date,",
+				"          Current_Flag,",
+				"          Created_Date,",
+				"          Updated_Date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 split(isNull(CustomerID_dim),",
+				"     !isNull(CustomerID_dim) && Name_new == Name_dim && City_new == City_dim,",
+				"     !isNull(CustomerID_dim) &&\r",
+				"(Name_new != Name_dim || City_new != City_dim),",
+				"     disjoint: false) ~> Split@(NewRecords, Unchanged, UpdateRecords, default)",
+				"Split@UpdateRecords alterRow(updateIf(1==1)) ~> alterRow1",
+				"alterRow1 derive(END_date = currentTimestamp(),",
+				"          current_flag = 'N') ~> derivedColumn1",
+				"Split@UpdateRecords alterRow(insertIf(1==1)) ~> alterRow2",
+				"alterRow2 derive(START_DATE = currentTimestamp(),",
+				"          END_DATE = toTimestamp('9999-12-31'),",
+				"          Currrent_Flg = 'Y') ~> derivedColumn2",
+				"Split@NewRecords alterRow(insertIf(1==1)) ~> alterRow3",
+				"alterRow3 derive(start_date = currentTimestamp(),",
+				"          end_date = toTimestamp('9999-12-31'),",
+				"          current_flag = 'Y') ~> derivedColumn3",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          END_date,",
+				"          current_flag",
+				"     )) ~> sink1",
+				"derivedColumn2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink2",
+				"derivedColumn3 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          start_date,",
+				"          end_date,",
+				"          current_flag",
+				"     )) ~> sink3"
+			]
+		}
+	}
+}
