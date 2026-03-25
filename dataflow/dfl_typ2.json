@@ -1,0 +1,225 @@
+{
+	"name": "dfl_typ2",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Src_customer",
+						"type": "DatasetReference"
+					},
+					"name": "sourceCust"
+				},
+				{
+					"dataset": {
+						"referenceName": "Tgt_customer",
+						"type": "DatasetReference"
+					},
+					"name": "Tgtcustomer"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Tgt_customer",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "Tgt_customer",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				},
+				{
+					"dataset": {
+						"referenceName": "Tgt_customer",
+						"type": "DatasetReference"
+					},
+					"name": "sink3"
+				}
+			],
+			"transformations": [
+				{
+					"name": "LkpOnTgt"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "Split",
+					"description": "Update as Update"
+				},
+				{
+					"name": "alterRow1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "alterRow2"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "alterRow3"
+				},
+				{
+					"name": "derivedColumn3"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CustomerID as integer,",
+				"          Name as string,",
+				"          City as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> sourceCust",
+				"source(output(",
+				"          SurrogateKey as integer,",
+				"          CustomerID as integer,",
+				"          Name as string,",
+				"          City as string,",
+				"          Start_Date as timestamp,",
+				"          End_Date as timestamp,",
+				"          Current_Flag as string,",
+				"          Created_Date as timestamp,",
+				"          Updated_Date as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> Tgtcustomer",
+				"sourceCust, Tgtcustomer lookup(sourceCust@CustomerID == Tgtcustomer@CustomerID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> LkpOnTgt",
+				"LkpOnTgt select(mapColumn(",
+				"          CustomerID = sourceCust@CustomerID,",
+				"          Name = sourceCust@Name,",
+				"          City = sourceCust@City,",
+				"          SurrogateKey,",
+				"          CustomerID = Tgtcustomer@CustomerID,",
+				"          Name = Tgtcustomer@Name,",
+				"          City = Tgtcustomer@City,",
+				"          Start_Date,",
+				"          End_Date,",
+				"          Current_Flag,",
+				"          Created_Date,",
+				"          Updated_Date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 split(isNull(CustomerID),",
+				"     !isNull(CustomerID) && (Name != Name || City != City),",
+				"     !isNull(CustomerID) &&(Name != Name || City != City),",
+				"     disjoint: false) ~> Split@(NewRecords, Unchanged, UpdateRecords, default)",
+				"Split@UpdateRecords alterRow(updateIf(1==1)) ~> alterRow1",
+				"alterRow1 derive(END_date = currentTimestamp(),",
+				"          current_flag = 'N') ~> derivedColumn1",
+				"Split@UpdateRecords alterRow(insertIf(1==1)) ~> alterRow2",
+				"alterRow2 derive(START_DATE = currentTimestamp(),",
+				"          END_DATE = toTimestamp('9999-12-31'),",
+				"          Currrent_Flg = 'Y') ~> derivedColumn2",
+				"Split@NewRecords alterRow(insertIf(1==1)) ~> alterRow3",
+				"alterRow3 derive(start_date = currentTimestamp(),",
+				"          end_date = toTimestamp('9999-12-31'),",
+				"          current_flag = 'Y') ~> derivedColumn3",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          SurrogateKey as integer,",
+				"          CustomerID as integer,",
+				"          Name as string,",
+				"          City as string,",
+				"          Start_Date as timestamp,",
+				"          End_Date as timestamp,",
+				"          Current_Flag as string,",
+				"          Created_Date as timestamp,",
+				"          Updated_Date as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          CustomerID,",
+				"          Name,",
+				"          City,",
+				"          Start_Date,",
+				"          Created_Date,",
+				"          Updated_Date",
+				"     )) ~> sink1",
+				"derivedColumn2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          SurrogateKey as integer,",
+				"          CustomerID as integer,",
+				"          Name as string,",
+				"          City as string,",
+				"          Start_Date as timestamp,",
+				"          End_Date as timestamp,",
+				"          Current_Flag as string,",
+				"          Created_Date as timestamp,",
+				"          Updated_Date as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          CustomerID,",
+				"          Name,",
+				"          City,",
+				"          Current_Flag,",
+				"          Created_Date,",
+				"          Updated_Date",
+				"     )) ~> sink2",
+				"derivedColumn3 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          SurrogateKey as integer,",
+				"          CustomerID as integer,",
+				"          Name as string,",
+				"          City as string,",
+				"          Start_Date as timestamp,",
+				"          End_Date as timestamp,",
+				"          Current_Flag as string,",
+				"          Created_Date as timestamp,",
+				"          Updated_Date as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          CustomerID,",
+				"          Name,",
+				"          City,",
+				"          Start_Date = Split@NewRecords@Start_Date,",
+				"          Created_Date,",
+				"          Updated_Date",
+				"     )) ~> sink3"
+			]
+		}
+	}
+}
