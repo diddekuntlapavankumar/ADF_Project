@@ -154,7 +154,6 @@
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError',",
 				"     mapColumn(",
-				"          SurrogateKey,",
 				"          CustomerID,",
 				"          Name,",
 				"          City,",
