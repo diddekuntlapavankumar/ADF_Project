@@ -1,8 +1,8 @@
 {
-	"name": "dim_customer",
+	"name": "ds_customer_output_singlefile",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "ls_adls_2",
+			"referenceName": "ls_adls_3",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
@@ -10,9 +10,8 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "dbo.source_customer.txt",
-				"folderPath": "customer",
-				"fileSystem": "dim"
+				"folderPath": "output",
+				"fileSystem": "sampleoutput"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",

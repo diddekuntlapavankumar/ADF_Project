@@ -1,0 +1,10 @@
+{
+	"name": "AKV_Sql_sqlserver",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://kvdataengineeringrg01.vault.azure.net/"
+		}
+	}
+}
