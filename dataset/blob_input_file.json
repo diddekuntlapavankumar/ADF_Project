@@ -1,0 +1,23 @@
+{
+	"name": "blob_input_file",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "azure_blob_1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "input2",
+				"container": "sampleinput2"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
