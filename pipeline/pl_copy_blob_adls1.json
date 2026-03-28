@@ -51,7 +51,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "blob_input_file",
+						"referenceName": "blob_input_files",
 						"type": "DatasetReference"
 					}
 				],
