@@ -1,0 +1,57 @@
+{
+	"name": "ds_input_parameter1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_adls_parameter",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"inputcontainername": {
+				"type": "string"
+			},
+			"inputdirectoryname": {
+				"type": "string"
+			},
+			"inputfilename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().inputfilename",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().inputdirectoryname",
+					"type": "Expression"
+				},
+				"fileSystem": {
+					"value": "@dataset().inputcontainername",
+					"type": "Expression"
+				}
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "customer_id",
+				"type": "String"
+			},
+			{
+				"name": "name",
+				"type": "String"
+			},
+			{
+				"name": "city",
+				"type": "String"
+			}
+		]
+	}
+}
