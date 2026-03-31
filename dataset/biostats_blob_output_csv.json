@@ -2,7 +2,7 @@
 	"name": "biostats_blob_output_csv",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "Blob_Link",
+			"referenceName": "blob_Link",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],

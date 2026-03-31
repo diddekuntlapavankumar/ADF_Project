@@ -2,7 +2,7 @@
 	"name": "biostats_adls_input_csv",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "ADLS_Link",
+			"referenceName": "adls_link",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
